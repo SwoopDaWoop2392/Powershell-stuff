@@ -104,12 +104,12 @@ function Find-Username {
 function Find-MgrAccount {
     #Gets user being terminated and selects the samaccount information entered in Manager information
     $mgraccount = Get-ADUser -Identity $Username -Properties manager -ErrorAction stop | Select-Object @{label = 'Manager'; Expression = { (Get-ADUser $_.Manager -Properties samaccountname).samaccountname } } | Select-Object  -expandproperty manager
+    #If manager information is not filled in for AD, the above will error. This returns false to be checked agasint in other parts of script.
     try {
         $Validation = Get-ADUser -Identity $mgraccount -ErrorAction stop > $null
         Return $mgraccount
     }
     catch {
-        #If manager information is not filled in for AD, the above will error. This returns false to be checked agasint in other parts of script.
         return $false
     }
 }
