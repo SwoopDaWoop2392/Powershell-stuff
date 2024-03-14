@@ -80,15 +80,13 @@ function Find-Username {
     Do {
         $username = (Read-Host -Prompt "Enter the terminated user's AD Account Name (JDoe)").trim()
         try {
-            #validate username entered is in AD
             $validation = Get-ADUser -Identity $UserName -ErrorAction stop > $null
-            #sucess flag for function to exit loop
             $Success = $true
         }
         catch {
             if ($adcount -lt 3) { Write-Host "Unable to find user in AD, please try again." }
         }
-
+        
         $adcount++
 
     }
@@ -123,10 +121,8 @@ function Find-MgrEmail {
     if ($false -ne $MGRAccount) {
         $mgremail = Get-ADUser -Identity $MGRAccount -Properties emailaddress -ErrorAction stop | Select-Object -expandproperty emailaddress
         try {
-            #validates email adress grabbed can be used in rest of script, and triggers success flag to end function.
             $Validation = Get-ADUser -filter { EmailAddress -eq $mgremail } -ErrorAction stop > $null
             $Success = $true
-            #removes need input flag
             $needinput = $false
         }
         catch {
@@ -182,7 +178,6 @@ function Find-UserEmail365 {
 
     if ($needinput) {
         Do { 
-            #same Do-until loop to get info, validate.
             $useremail = (Read-Host -Prompt "Please enter the users's Email Adress").trim()
             try {
                 $validation = Get-exomailbox -identity $useremail -ErrorAction stop > $null
@@ -229,7 +224,6 @@ function Find-MgrEmail365 {
     }
 
     if ($NeedInput) {
-        #Do-Until loop for manual entry of Manager email address, validate.
         Do {  
             $mgremail = (Read-Host -Prompt "Please enter the manager's Email Adress").trim()
             try {
