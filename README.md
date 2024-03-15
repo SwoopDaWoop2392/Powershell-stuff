@@ -4,6 +4,8 @@ Collection of Powershell scripts for general use.
 # Prerequisites
 Most of these scripts will be geared towards built-in windows features or Microsoft O365 and Active Directory. The below modules should be installed 
 
+.NET 4.7.2 or later
+
 Install-Module AzureAD
 
 Install-Module -Name ExchangeOnlineManagement
