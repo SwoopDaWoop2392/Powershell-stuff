@@ -89,7 +89,7 @@ function Find-Username {
         catch {
             if ($adcount -lt 3) { Write-Host "Unable to find user in AD, please try again." }
         }
-        
+
         $adcount++
 
     }
@@ -139,6 +139,7 @@ function Find-MgrEmail {
     if ($NeedInput) {
         Do {  
             $mgremail = (Read-Host -Prompt "Please enter the manager's Email Adress").trim()
+            if (![string]::IsNullOrEmpty($mgremail)) {
             try {
                 $validation = Get-ADUser -filter { EmailAddress -eq $mgremail } -ErrorAction stop > $null
                 $Success = $true
@@ -146,6 +147,7 @@ function Find-MgrEmail {
             catch { 
                 Write-Host "Unable to find manager email in AD, please try again."
             }
+        }
             $adcount++
         }
         Until($adcount -eq 3 -or $Success)
@@ -204,6 +206,7 @@ function Find-UserEmail365 {
 }
 
 function Find-MgrEmail365 {
+
     $adcount = 0
     $needinput = $false
     $Success = $true
@@ -234,6 +237,7 @@ function Find-MgrEmail365 {
         #Do-Until loop for manual entry of Manager email address, validate.
         Do {  
             $mgremail = (Read-Host -Prompt "Please enter the manager's Email Adress").trim()
+            if (![string]::IsNullOrEmpty($mgremail)) {
             try {
                 $validation = Get-exomailbox -identity $mgremail -ErrorAction stop > $null
                 $Success = $true
@@ -241,6 +245,7 @@ function Find-MgrEmail365 {
             catch { 
                 Write-Host "Unable to find manager email in AD, please try again."
             }
+        }
             $adcount++
         }Until($adcount -eq 3 -or $Success)
     }
@@ -252,7 +257,7 @@ function Find-MgrEmail365 {
 
 
 #-----------------SCRIPT FOR TERMINATION--------------------------------
- 
+
 #Connect to O365 services
 if ($Hybrid -or !$Onprem) {
     Connect-Graph -Scopes User.ReadWrite.All, Organization.Read.All, Group.ReadWrite.All -NoWelcome
@@ -274,7 +279,7 @@ if ($Hybrid) {
     if ($MailboxAccess -eq 'Y') {
         $MGRAccount = Find-MgrAccount
         $MGREmail = Find-MgrEmail365
-        if ($false -ne $MGRAccount) {
+        if ($false -ne $mgeraccount) {
             $ManagerDisplayname = Get-ADUser -Identity $MGRAccount | Select-Object -ExpandProperty Name 
         }
         else { 
@@ -289,7 +294,7 @@ if ($Onprem -and ($false -eq $Hybrid)) {
     if ($MailboxAccess -eq 'Y') {
         $MGRAccount = Find-MgrAccount
         $MGREmail = Find-MgrEmail
-        if ($false -ne $MGRAccount) {
+        if ($false -ne $mgeraccount) {
             $ManagerDisplayname = Get-ADUser -Identity $MGRAccount | Select-Object -ExpandProperty Name 
         }
         else { 
@@ -389,7 +394,7 @@ if ($Onprem) {
             Add-ExOPMailboxPermission $username -User "$mgremail" -AccessRights FullAccess -InheritanceType all -AutoMapping $True -Erroraction Stop
         }
     } 
-    
+
     Get-PSSession | Remove-PSSession
 }
 
